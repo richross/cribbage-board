@@ -1,0 +1,48 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--paper-raised);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-sm);
+}
+
+.heading {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.losers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.loserRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.badge {
+  padding: var(--space-1) var(--space-2);
+  color: var(--pencil-red);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--pencil-red);
+  border-radius: var(--radius-sm);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

@@ -1,0 +1,65 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: var(--space-2);
+}
+
+/* 7 + 6 rank rows wherever 7 keys still clear the 44px target. */
+@media (min-width: 380px) {
+  .grid {
+    grid-template-columns: repeat(7, minmax(44px, 1fr));
+    max-width: 36rem;
+  }
+}
+
+.rankKey.used {
+  color: var(--ink-2);
+  text-decoration: line-through;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.suitSymbol {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.suitSymbol.redSuit {
+  color: var(--pencil-red);
+}
+
+.suitName {
+  font-size: var(--font-size-xs);
+}
+
+.textEntry {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.disclosureButton {
+  align-self: flex-start;
+  min-height: 44px;
+  padding: var(--space-1) var(--space-2);
+  color: var(--pencil-blue);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.helper {
+  color: var(--ink-2);
+  font-size: var(--font-size-xs);
+}

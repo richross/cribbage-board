@@ -1,0 +1,103 @@
+.row {
+  --gap: var(--space-2);
+  /* 5 flex gaps + 4 hand slots + 1 starter slot + a 0.4-slot-wide spacer must
+     fit in one row, even at 360px, without wrapping. */
+  --slot-w: min(64px, calc((100% - 5 * var(--gap)) / 5.4));
+  display: flex;
+  align-items: flex-end;
+  gap: var(--gap);
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  flex: 0 0 var(--slot-w);
+  width: var(--slot-w);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 0 4px;
+  background: none;
+  border: none;
+}
+
+.caption {
+  font-size: var(--font-size-xs);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 4 / 5.5;
+  background-color: var(--paper-raised);
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 0 var(--grid-major);
+  transition:
+    transform var(--dur-fast) var(--ease-out-expo),
+    box-shadow var(--dur-fast) linear,
+    opacity var(--dur-fast) linear;
+}
+
+.emptyBox {
+  background-color: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.placeholderNumber {
+  color: var(--ink-2);
+  font-family: var(--font-label);
+  font-size: clamp(0.65rem, 4.5vw, var(--font-size-sm));
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Active slot: ink underline hugging the card box's own bottom edge. */
+.box[data-active='true']::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  background-color: var(--ink);
+}
+
+.highlighted {
+  transform: translateY(-4px);
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  box-shadow: 0 4px 6px rgba(38, 43, 37, 0.25);
+}
+
+.dimmed {
+  opacity: 0.35;
+}
+
+.marker {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: var(--ink);
+  color: var(--paper);
+  font-size: var(--font-size-xs);
+  border-radius: 50%;
+}
+
+.gap {
+  width: calc(var(--slot-w) * 0.4);
+  flex: 0 0 auto;
+}

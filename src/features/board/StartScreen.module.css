@@ -1,0 +1,99 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-top: var(--space-4);
+}
+
+.heading {
+  font-family: var(--font-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: var(--font-size-xl);
+  color: var(--ink);
+}
+
+.subheading {
+  color: var(--ink-2);
+}
+
+.notice {
+  padding: var(--space-3) var(--space-4);
+  color: var(--pencil-red);
+  background-color: var(--paper-raised);
+  border: 1px solid var(--pencil-red);
+  border-radius: var(--radius-sm);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.formatButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 88px;
+  padding: var(--space-5);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 1px 0 var(--grid-major);
+  transition: transform var(--dur-fast) var(--ease-out-expo), box-shadow var(--dur-fast) linear;
+}
+
+.formatButton:hover {
+  background-color: var(--paper);
+}
+
+.formatButton:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+}
+
+.formatLabel {
+  font-size: var(--font-size-lg);
+  color: var(--ink);
+}
+
+/* "2 v 2" reads with a lowercase v — override the shared .label utility's
+   uppercase transform (which would otherwise render "2 V 2"). */
+.formatLabel.formatLabelLowerV {
+  text-transform: none;
+}
+
+.formatText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.formatCaption {
+  color: var(--ink-2);
+  font-size: var(--font-size-sm);
+}
+
+@media (min-width: 900px) {
+  .buttons {
+    flex-direction: row;
+  }
+
+  .formatButton {
+    flex: 1 1 0;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 160px;
+  }
+}

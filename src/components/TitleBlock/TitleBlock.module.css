@@ -1,0 +1,22 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-none);
+  background-color: var(--paper-raised);
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border-right: 1px solid var(--grid-major);
+  color: var(--ink);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.cell:last-child {
+  border-right: none;
+}

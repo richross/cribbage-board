@@ -1,0 +1,98 @@
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--grid-major);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.headRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.label {
+  color: var(--ink);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.totalGroup {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.toGo {
+  color: var(--ink-2);
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+}
+
+/* Reserved space for the "+N" confirmation so it never overlaps other UI:
+   it grows the flex row in-flow instead of floating over content. */
+.flashSlot {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.flash {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  animation: rise 1.4s var(--ease-out-expo) forwards;
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash {
+    animation-duration: 1.4s;
+  }
+}
+
+.total {
+  font-size: 2.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  line-height: 1;
+  text-align: right;
+}
+
+.keys {
+  display: flex;
+  gap: 3px;
+}

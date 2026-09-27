@@ -1,0 +1,114 @@
+/* Modern reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul[class],
+ol[class] {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+}
+
+/* Base surface: faint engineering grid — 8px minor lines, a heavier line every
+   5th square (40px), matching cribbage's 5-hole groups. */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(to right, var(--grid-line-major) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(to bottom, var(--grid-line-major) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(to right, var(--grid-line-minor) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(to bottom, var(--grid-line-minor) 0 1px, transparent 1px 8px);
+}
+
+/* Reading surfaces (e.g. Rules) drop the grid in favor of plain paper. */
+.sheet--plain {
+  background-image: none;
+  background-color: var(--paper);
+}
+
+/* Tabular numerals for scores, totals, and any counted value. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Engineering-lettering label style: headings and labels only, never body. */
+.label {
+  font-family: var(--font-label);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Focus ring: 2px pencil-blue outline, 2px offset, on every interactive element. */
+:focus-visible {
+  outline: 2px solid var(--pencil-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Elements focused programmatically for a11y routing (e.g. the page heading
+   after a route change) are not interactive controls: they must not show
+   the keyboard focus ring. */
+[tabindex='-1']:focus {
+  outline: none;
+}
+
+::selection {
+  background-color: var(--pencil-blue);
+  color: var(--paper-raised);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

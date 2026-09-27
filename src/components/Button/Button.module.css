@@ -1,0 +1,101 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: transform var(--dur-fast) var(--ease-out-expo), opacity var(--dur-fast) linear;
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Primary: filled ink with paper text. */
+.primary {
+  background-color: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--ink-2);
+  border-color: var(--ink-2);
+}
+
+/* Secondary: 1px ink outline. */
+.secondary {
+  background-color: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: var(--paper-raised);
+}
+
+/* Destructive: red pencil outline. */
+.destructive {
+  background-color: transparent;
+  color: var(--pencil-red);
+  border-color: var(--pencil-red);
+}
+
+.destructive:hover:not(:disabled) {
+  background-color: var(--paper-raised);
+}
+
+/* Ghost: no border, text only, for low-emphasis inline actions. */
+.ghost {
+  background-color: transparent;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: var(--paper-raised);
+}
+
+.sm {
+  min-height: 44px;
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--font-size-xs);
+}
+
+.lg {
+  min-height: 52px;
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-md);
+}
+
+.spinner {
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 700ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.4s;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

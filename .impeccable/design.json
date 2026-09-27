@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-27T22:45:20Z",
+  "title": "Design System: Cribbage Companion",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#EEF3E6",
+        "tonalRamp": ["#1B211B", "#232B22", "#28331F", "#525C4C", "#B3C9A4", "#D3E0C8", "#F6F9F1", "#EEF3E6"]
+      },
+      "paper-raised": {
+        "role": "neutral",
+        "displayName": "Paper Raised",
+        "canonical": "#F6F9F1",
+        "tonalRamp": ["#232B22", "#28331F", "#34422F", "#525C4C", "#B3C9A4", "#D3E0C8", "#F6F9F1", "#FCFEFA"]
+      },
+      "grid-minor": {
+        "role": "neutral",
+        "displayName": "Grid Minor",
+        "canonical": "#D3E0C8",
+        "tonalRamp": ["#28331F", "#34422F", "#4A5C3F", "#6E8560", "#93AB84", "#B7CCA8", "#D3E0C8", "#ECF2E5"]
+      },
+      "grid-major": {
+        "role": "neutral",
+        "displayName": "Grid Major",
+        "canonical": "#B3C9A4",
+        "tonalRamp": ["#212B18", "#2E3D22", "#455A34", "#5F7A49", "#7F9968", "#A0B98A", "#B3C9A4", "#D6E4CD"]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Graphite Ink",
+        "canonical": "#262B25",
+        "tonalRamp": ["#151813", "#1D211B", "#262B25", "#3C4438", "#525C4C", "#818C72", "#B4BFA6", "#E3EAD9"]
+      },
+      "ink-2": {
+        "role": "primary",
+        "displayName": "Ink Secondary",
+        "canonical": "#525C4C",
+        "tonalRamp": ["#1D211B", "#262B25", "#3C4438", "#525C4C", "#6D7963", "#8C9A7F", "#A9B5A0", "#D2DBC9"]
+      },
+      "pencil-red": {
+        "role": "secondary",
+        "displayName": "Pencil Red",
+        "canonical": "#B3261E",
+        "tonalRamp": ["#3D0D0A", "#5C1310", "#7E1B16", "#B3261E", "#D3453B", "#E87A72", "#FF8A7A", "#FFC7BE"]
+      },
+      "pencil-blue": {
+        "role": "secondary",
+        "displayName": "Pencil Blue",
+        "canonical": "#1D4E9E",
+        "tonalRamp": ["#0A1F42", "#0F2C60", "#153B7E", "#1D4E9E", "#3568BE", "#5F8CD8", "#8EB4FF", "#C4D8FF"]
+      },
+      "pencil-ochre": {
+        "role": "tertiary",
+        "displayName": "Pencil Ochre",
+        "canonical": "#8A5600",
+        "tonalRamp": ["#2E1C00", "#452A00", "#603B00", "#8A5600", "#B57500", "#DA9A20", "#F0B24A", "#FBD79A"]
+      },
+      "eraser": {
+        "role": "state",
+        "displayName": "Eraser",
+        "canonical": "#E7B7B0",
+        "tonalRamp": ["#3A1613", "#5A3431", "#7A4B45", "#A3665D", "#C99387", "#E7B7B0", "#F1D2CC", "#F9E9E6"]
+      }
+    },
+    "typographyMeta": {
+      "label": { "displayName": "Engineering Label", "purpose": "Uppercase, letter-spaced Barlow Semi Condensed for nav, title-block cells, and section labels only — never body copy." },
+      "body": { "displayName": "Body", "purpose": "Barlow at 17px base for reading text, field input, and general copy." },
+      "total": { "displayName": "Score Total", "purpose": "The large 2.5rem/700 per-track score total in the scoring row." }
+    },
+    "shadows": [
+      { "name": "key-pressed-tab", "value": "0 1px 0 var(--grid-major)", "purpose": "Resting hairline under every Key, simulating a pressed-paper tab; removed entirely on press/active." }
+    ],
+    "motion": [
+      { "name": "dur-fast", "value": "150ms", "purpose": "Default state transitions (opacity/transform)." },
+      { "name": "dur-med", "value": "200ms", "purpose": "Eraser smudge fade on undo." },
+      { "name": "dur-peg", "value": "350ms", "purpose": "Front-peg step-by-step travel to its new hole." },
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Easing for peg travel and skip-link reveal." }
+    ],
+    "breakpoints": [
+      { "name": "picker-grid", "value": "380px" },
+      { "name": "rail", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Key (+N)",
+      "kind": "button",
+      "refersTo": "key",
+      "description": "The primary scoring touch surface (+1..+6, rank keys, number pad), 48x48px minimum with a track-colored top rule when scoped to a player/team.",
+      "html": "<button class=\"ds-key\" data-pressed=\"false\">+1</button>",
+      "css": ".ds-key { --track-color: #1D4E9E; position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 48px; padding: 8px 12px; background-color: #F6F9F1; color: #262B25; font-family: 'Barlow', system-ui, sans-serif; font-size: 1.25rem; font-weight: 600; font-variant-numeric: tabular-nums; border: 1px solid #B3C9A4; border-radius: 4px; box-shadow: 0 1px 0 #B3C9A4; transition: transform 150ms cubic-bezier(0.16,1,0.3,1), box-shadow 150ms linear; } .ds-key::before { content: ''; position: absolute; top: 0; left: 8px; right: 8px; height: 2px; background-color: var(--track-color); border-radius: 0 0 2px 2px; } .ds-key:hover { background-color: #EEF3E6; } .ds-key:focus-visible { outline: 2px solid #1D4E9E; outline-offset: 2px; } .ds-key:active { transform: translateY(1px); box-shadow: none; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Filled-ink primary action button used for the main confirming action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Next Deal</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 20px; font-family: 'Barlow', system-ui, sans-serif; font-size: 0.9375rem; font-weight: 600; background-color: #262B25; color: #EEF3E6; border: 1px solid #262B25; border-radius: 4px; transition: transform 150ms cubic-bezier(0.16,1,0.3,1), background-color 150ms linear; } .ds-btn-primary:hover { background-color: #525C4C; border-color: #525C4C; } .ds-btn-primary:focus-visible { outline: 2px solid #1D4E9E; outline-offset: 2px; } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outlined ink button for a lower-emphasis action alongside a primary button.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 20px; font-family: 'Barlow', system-ui, sans-serif; font-size: 0.9375rem; font-weight: 600; background-color: transparent; color: #262B25; border: 1px solid #262B25; border-radius: 4px; transition: background-color 150ms linear; } .ds-btn-secondary:hover { background-color: #F6F9F1; } .ds-btn-secondary:focus-visible { outline: 2px solid #1D4E9E; outline-offset: 2px; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field-input",
+      "description": "Underline-style pad field with the label in engineering caps above it.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Hand Number</span><input class=\"ds-field-input\" type=\"text\" value=\"7\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 4px; } .ds-field-label { color: #525C4C; font-size: 0.8125rem; font-family: 'Barlow Semi Condensed', system-ui, sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; } .ds-field-input { min-height: 44px; padding: 8px 4px; background-color: #F6F9F1; color: #262B25; font-family: 'Barlow', system-ui, sans-serif; font-size: 1.0625rem; font-variant-numeric: tabular-nums; border: none; border-bottom: 1px solid #262B25; border-radius: 4px 4px 0 0; } .ds-field-input:focus-visible { outline: 2px solid #1D4E9E; outline-offset: 2px; }"
+    },
+    {
+      "name": "Worked Line (grand total)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The signature hand-scoring breakdown line: a dotted leader run to a tabular value, with the grand total double-ruled and boxed.",
+      "html": "<div class=\"ds-worked-total\"><span class=\"ds-worked-label\">Total</span><span class=\"ds-worked-leader\"></span><span class=\"ds-worked-value\">12</span></div>",
+      "css": ".ds-worked-total { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; padding: 8px 12px; border-top: 3px double #262B25; border-bottom: 1px solid #262B25; border-left: 1px solid #262B25; border-right: 1px solid #262B25; background-color: #F6F9F1; font-size: 1.25rem; color: #262B25; } .ds-worked-label { white-space: nowrap; } .ds-worked-leader { flex: 1 1 auto; overflow: hidden; border-bottom: 1px dotted #525C4C; height: 0.6em; min-width: 16px; } .ds-worked-value { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1.5rem; white-space: nowrap; }"
+    },
+    {
+      "name": "Bottom Nav",
+      "kind": "nav",
+      "refersTo": null,
+      "description": "3-destination bottom navigation (Board / Score Hand / Rules) with an ink underline bar marking the active item.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-item ds-nav-item-active\" href=\"#\">Board</a><a class=\"ds-nav-item\" href=\"#\">Score Hand</a><a class=\"ds-nav-item\" href=\"#\">Rules</a></nav>",
+      "css": ".ds-nav { display: flex; background-color: #F6F9F1; border-top: 1px solid #B3C9A4; } .ds-nav-item { position: relative; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 56px; padding: 8px 4px; color: #525C4C; font-family: 'Barlow Semi Condensed', system-ui, sans-serif; font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.06em; text-decoration: none; } .ds-nav-item:hover { color: #262B25; } .ds-nav-item-active { color: #262B25; } .ds-nav-item-active::before { content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 2px; background-color: #262B25; }"
+    },
+    {
+      "name": "Peg (front, solid)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The front-peg marker: a solid colored shape (circle/square/triangle per track) drawn as inline SVG, paired with a text label so identity never rests on color alone.",
+      "html": "<svg class=\"ds-peg\" width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" role=\"img\"><title>P1 front peg</title><circle cx=\"8\" cy=\"8\" r=\"6\" fill=\"#B3261E\" stroke=\"#B3261E\" stroke-width=\"2\" /></svg>",
+      "css": ".ds-peg { display: inline-block; }"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Bordered equal-width option strip (e.g. Hand/Crib toggle); the selected option inverts to filled ink.",
+      "html": "<div class=\"ds-segmented\" role=\"radiogroup\"><button class=\"ds-segmented-option\" aria-checked=\"true\">Hand</button><button class=\"ds-segmented-option\" aria-checked=\"false\">Crib</button></div>",
+      "css": ".ds-segmented { display: flex; border: 1px solid #262B25; border-radius: 4px; overflow: hidden; } .ds-segmented-option { flex: 1 1 0; min-height: 44px; padding: 8px; color: #262B25; font-family: 'Barlow', system-ui, sans-serif; font-size: 0.9375rem; font-weight: 500; background-color: #F6F9F1; border: none; border-right: 1px solid #262B25; } .ds-segmented-option:last-child { border-right: none; } .ds-segmented-option[aria-checked='true'] { background-color: #262B25; color: #EEF3E6; } .ds-segmented-option:hover:not([aria-checked='true']) { background-color: #EEF3E6; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engineering Computation Pad",
+    "overview": "The app is a sheet of pale-green engineering graph paper propped beside a real deck of cards, with graphite ink and colored pencils doing the work. It refuses two things by name: the fake-wood pegboard skeuomorph and the flat dashboard of big anonymous numbers. Every score is shown worked, not just stated — leader-dot lines add up to a double-ruled, boxed total, the way a hand check gets scribbled in a margin. The palette stays restrained: paper and graphite carry nearly everything, and the three pencil colors (red, blue, ochre) are reserved for track identity and state, never used as general decoration. Depth comes from ruled lines and a pressed-paper key tab, never from shadows, glass, or gradients. The one authored motion is the peg itself stepping hole-by-hole to its new position, with an eraser-pink smudge marking an undo.",
+    "keyCharacteristics": [
+      "Pale green 5-square engineering grid as the page ground, replaced by plain paper on reading surfaces.",
+      "Graphite ink for structure and text; three pencil colors reserved for player/team track identity.",
+      "Uppercase, letter-spaced Barlow Semi Condensed \"engineering lettering\" for labels only, never body copy.",
+      "Tabular numerals everywhere a value is counted.",
+      "Worked-line leader-dot breakdowns culminating in a double-ruled, boxed grand total.",
+      "Flat, ruled-line depth: no shadows, no glass, no gradients, no pill shapes."
+    ],
+    "rules": [
+      { "name": "The Pencil Scarcity Rule", "body": "The three track pencil colors (red, blue, ochre) are assigned only to player/team identity, the skunk line, focus, and error/destructive state — never to arbitrary UI decoration. If a new element needs color to stand out, ink and ink-2 are tried first.", "section": "colors" },
+      { "name": "The Never-Color-Alone Rule", "body": "Track identity is never carried by color by itself: a shape (PegShape: circle/square/triangle) and a text label (P1/T1, P2/T2, P3) always travel with the color. This is a built accessibility guarantee, not a stylistic option.", "section": "colors" },
+      { "name": "The Lettering-Is-Labels-Only Rule", "body": "Uppercase, letter-spaced Barlow Semi Condensed is a labeling device (nav, title block, margin index) — it never sets body or reading copy, which stays in plain-case Barlow.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest; the only depth cue is a hairline bottom rule on keys, which is removed (not deepened) on press. No glass, glow, gradient, or lifted-card shadow appears anywhere in the built system.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reserve pencil-red, pencil-blue, and pencil-ochre exclusively for track identity, focus, skunk lines, and error/destructive state.",
+      "Do pair every track color with a distinct PegShape (circle/square/triangle) and a text label — never rely on color alone.",
+      "Do use font-variant-numeric: tabular-nums on every counted or scored value.",
+      "Do build depth with 1px grid-major/ink rules and the pressed-key hairline shadow, never with blurred shadows.",
+      "Do drop the background grid (.sheet--plain) on dense reading surfaces like Rules."
+    ],
+    "donts": [
+      "Don't use uppercase Barlow Semi Condensed lettering for body or reading copy — labels only.",
+      "Don't introduce pill-shaped (fully rounded) buttons, keys, or containers; 4px and 0 are the only radii in the built system.",
+      "Don't add ambient lifted-card shadows, glass, glows, or gradient text/fills anywhere in the UI.",
+      "Don't animate the peg advance or eraser smudge without respecting prefers-reduced-motion; both are already built to collapse to near-instant."
+    ]
+  }
+}
