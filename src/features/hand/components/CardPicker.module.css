@@ -10,6 +10,14 @@
   gap: var(--space-2);
 }
 
+/* 7 + 6 rank rows wherever 7 keys still clear the 44px target. */
+@media (min-width: 380px) {
+  .grid {
+    grid-template-columns: repeat(7, minmax(44px, 1fr));
+    max-width: 36rem;
+  }
+}
+
 .rankKey.used {
   color: var(--ink-2);
   text-decoration: line-through;
