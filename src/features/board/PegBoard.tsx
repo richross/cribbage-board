@@ -1,9 +1,8 @@
-// The peg-board visualization: four 30-hole "streets" plus a single 121
-// game hole, one lane per track. Holes and the skunk lines are drawn as
-// native SVG (they scale cleanly with the viewBox); pegs and every text
-// label are rendered as a plain HTML overlay on top so their real on-screen
-// size never shrinks with the SVG's viewBox scale — this is what keeps the
-// board legible ("the hero") at arm's length on a phone. The SVG itself is
+// The peg-board visualization: a continuous "racetrack" — one lap of 120
+// holes around a rounded rectangle, one concentric lane per track (first
+// track outermost), with start holes and a shared 121 game hole at the bottom
+// center. Holes and ruled lines are SVG; pegs and every text label are an HTML
+// overlay so their real size never shrinks with the viewBox scale. The SVG is
 // aria-hidden — the scoring rows are the real input/output, and a
 // VisuallyHidden summary carries the same information as text.
 import { useEffect, useRef, useState } from 'react';
@@ -11,7 +10,7 @@ import type { TrackState } from '../../domain/board';
 import PegShape from '../../components/PegShape/PegShape';
 import VisuallyHidden from '../../components/VisuallyHidden/VisuallyHidden';
 import { trackColorVar } from './colors';
-import { buildLayout, STREET_COUNT, HOLES_PER_STREET, GAME_HOLE } from './pegBoardLayout';
+import { buildLayout, VIEWBOX_WIDTH } from './pegBoardLayout';
 import type { PegBoardLayout } from './pegBoardLayout';
 import type { UndoSmudge } from './useGame';
 import styles from './PegBoard.module.css';
@@ -84,18 +83,36 @@ function pct(value: number, total: number): string {
   return `${(value / total) * 100}%`;
 }
 
+/** Rendered-width / viewBox-width, so overlay pegs scale with the holes. */
+function useBoardScale(ref: React.RefObject<HTMLDivElement>): number {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width;
+      if (width > 0) setScale(width / VIEWBOX_WIDTH);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref]);
+  return scale;
+}
+
 function OverlayPeg({
   trackState,
   trackIndex,
   layout,
   color,
   reduceMotion,
+  scale,
 }: {
   trackState: TrackState;
   trackIndex: number;
   layout: PegBoardLayout;
   color: string;
   reduceMotion: boolean;
+  scale: number;
 }) {
   const displayScore = useAnimatedScore(trackState.score, reduceMotion);
   const front = layout.scoreXY(displayScore, trackIndex);
@@ -104,11 +121,8 @@ function OverlayPeg({
   return (
     <>
       {trackState.score > 0 ? (
-        <div
-          className={styles.peg}
-          style={{ left: pct(back.x, layout.vbW), top: pct(back.y, layout.vbH) }}
-        >
-          <PegShape shape={trackState.track.shape} color={color} solid={false} size={16} />
+        <div className={styles.peg} style={{ left: pct(back.x, layout.vbW), top: pct(back.y, layout.vbH) }}>
+          <PegShape shape={trackState.track.shape} color={color} solid={false} size={Math.round(12 * scale)} />
         </div>
       ) : null}
       <div className={styles.peg} style={{ left: pct(front.x, layout.vbW), top: pct(front.y, layout.vbH) }}>
@@ -116,7 +130,7 @@ function OverlayPeg({
           shape={trackState.track.shape}
           color={color}
           solid
-          size={18}
+          size={Math.round(14 * scale)}
           title={`${trackState.track.label} peg`}
         />
       </div>
@@ -124,18 +138,26 @@ function OverlayPeg({
   );
 }
 
+const LANE_NAMES: Record<number, string[]> = {
+  2: ['outside lane', 'inside lane'],
+  3: ['outside lane', 'middle lane', 'inside lane'],
+};
+
 function PegBoard({ tracks, smudge }: PegBoardProps) {
   const reduceMotion = usePrefersReducedMotion();
+  const frameRef = useRef<HTMLDivElement>(null);
+  const scale = useBoardScale(frameRef);
   const layout = buildLayout(tracks.length);
   const { vbW, vbH } = layout;
-  const lastStreet = STREET_COUNT - 1;
+  const laneNames = LANE_NAMES[tracks.length] ?? [];
 
   const smudgeTrackIndex = smudge ? tracks.findIndex((t) => t.track.id === smudge.trackId) : -1;
   const smudgeXY = smudge && smudgeTrackIndex !== -1 ? layout.scoreXY(smudge.hole, smudgeTrackIndex) : null;
+  const game = layout.gameHoleXY();
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.svgFrame} style={{ aspectRatio: `${vbW} / ${vbH}` }}>
+      <div ref={frameRef} className={styles.svgFrame} style={{ aspectRatio: `${vbW} / ${vbH}` }}>
         <svg
           className={styles.svg}
           viewBox={`0 0 ${vbW} ${vbH}`}
@@ -143,86 +165,81 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
           aria-hidden="true"
           focusable="false"
         >
-          {Array.from({ length: STREET_COUNT }).map((_, street) => (
-            <g key={street}>
-              {tracks.map((trackState, trackIndex) => {
-                const y = layout.laneY(street, trackIndex);
-                return (
-                  <g key={trackState.track.id}>
-                    {Array.from({ length: HOLES_PER_STREET }).map((__, holeIndex) => (
-                      <circle key={holeIndex} cx={layout.holeX(holeIndex)} cy={y} r={3.4} className={styles.hole} />
-                    ))}
-                    {street === lastStreet ? (
-                      <circle
-                        cx={layout.gameHoleXY(trackIndex).x}
-                        cy={layout.gameHoleXY(trackIndex).y}
-                        r={6.4}
-                        className={styles.gameHole}
-                      />
-                    ) : null}
-                  </g>
-                );
-              })}
+          {layout.holes.map((lane, trackIndex) => (
+            <g key={trackIndex}>
+              {lane.map((hole, i) => (
+                <circle key={i} cx={hole.x} cy={hole.y} r={layout.holeRadius} className={styles.hole} />
+              ))}
+              <circle
+                cx={layout.startXY(trackIndex).x}
+                cy={layout.startXY(trackIndex).y}
+                r={layout.holeRadius}
+                className={styles.startHole}
+              />
             </g>
           ))}
-
-          {/* Skunk lines: dashed, after hole 60 (top of street index 2) and after hole 90 (top of street index 3). */}
-          {[2, 3].map((street) => {
-            const y = layout.bandTop(street) - layout.geometry.streetGap / 2;
-            return <line key={`skunk-${street}`} x1={0} x2={vbW} y1={y} y2={y} className={styles.skunkLine} />;
-          })}
+          <circle cx={game.x} cy={game.y} r={layout.gameHoleRadius} className={styles.gameHole} />
+          <line
+            x1={layout.finishTick.from.x}
+            y1={layout.finishTick.from.y}
+            x2={layout.finishTick.to.x}
+            y2={layout.finishTick.to.y}
+            className={styles.finishLine}
+          />
+          {layout.skunkTicks.map((tick) => (
+            <line
+              key={tick.after}
+              x1={tick.from.x}
+              y1={tick.from.y}
+              x2={tick.to.x}
+              y2={tick.to.y}
+              className={styles.skunkLine}
+            />
+          ))}
         </svg>
 
-        {/* HTML overlay: pegs and every text label live here so their real CSS
-            pixel size is independent of the SVG viewBox scale. */}
         <div className={styles.overlay} aria-hidden="true">
-          {tracks.map((trackState, trackIndex) =>
-            Array.from({ length: STREET_COUNT }).map((_, street) => (
-              <span
-                key={`${trackState.track.id}-${street}`}
-                className={styles.laneLabel}
-                style={{ left: pct(4, vbW), top: pct(layout.laneY(street, trackIndex), vbH) }}
-              >
-                {trackState.track.shortLabel}
-              </span>
-            )),
-          )}
-
-          {[0, 1, 2].map((street) => (
+          {layout.marks.map((mark) => (
             <span
-              key={`mark-${street}`}
-              className={styles.mark}
-              style={{
-                left: pct(layout.geometry.leftMargin + layout.streetWidth + 3, vbW),
-                top: pct(layout.bandTop(street) + layout.bandHeight / 2, vbH),
-              }}
+              key={mark.value}
+              className={mark.value === 121 ? `${styles.mark} ${styles.gameMark}` : styles.mark}
+              style={{ left: pct(mark.x, vbW), top: pct(mark.y, vbH) }}
             >
-              {(street + 1) * HOLES_PER_STREET}
+              {mark.value}
             </span>
           ))}
-          <span
-            className={styles.mark}
+          {layout.skunkTicks.map((tick) => (
+            <span
+              key={`skunk-${tick.after}`}
+              className={styles.skunkLabel}
+              style={{ left: pct(tick.label.x, vbW), top: pct(tick.label.y, vbH) }}
+            >
+              Skunk
+            </span>
+          ))}
+
+          <ul
+            className={styles.legend}
             style={{
-              left: pct(layout.gameHoleXY(0).x, vbW),
-              top: pct(layout.bandTop(lastStreet) - 5, vbH),
-              transform: 'translateX(-50%)',
+              left: pct(layout.infield.x, vbW),
+              top: pct(layout.infield.y, vbH),
+              width: pct(layout.infield.w, vbW),
+              height: pct(layout.infield.h, vbH),
             }}
           >
-            {GAME_HOLE}
-          </span>
-
-          {[2, 3].map((street) => {
-            const y = layout.bandTop(street) - layout.geometry.streetGap / 2;
-            return (
-              <span
-                key={`skunk-label-${street}`}
-                className={styles.skunkLabel}
-                style={{ top: pct(y, vbH), transform: 'translateY(-100%)' }}
-              >
-                Skunk
-              </span>
-            );
-          })}
+            {tracks.map((trackState, trackIndex) => (
+              <li key={trackState.track.id} className={styles.legendItem}>
+                <PegShape
+                  shape={trackState.track.shape}
+                  color={trackColorVar(trackState.track.color)}
+                  solid
+                  size={12}
+                />
+                <span className={styles.legendLabel}>{trackState.track.shortLabel}</span>
+                <span className={styles.legendLane}>{laneNames[trackIndex]}</span>
+              </li>
+            ))}
+          </ul>
 
           {tracks.map((trackState, trackIndex) => (
             <OverlayPeg
@@ -232,6 +249,7 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
               layout={layout}
               color={trackColorVar(trackState.track.color)}
               reduceMotion={reduceMotion}
+              scale={scale}
             />
           ))}
 
