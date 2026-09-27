@@ -18,8 +18,8 @@ export default defineConfig({
         scope: '/cribbage-board/',
         start_url: '/cribbage-board/',
         display: 'standalone',
-        background_color: '#1b1f24',
-        theme_color: '#1b1f24',
+        background_color: '#EEF3E6',
+        theme_color: '#EEF3E6',
         icons: [
           {
             src: 'icons/icon-192.png',

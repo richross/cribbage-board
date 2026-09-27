@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#1b1f24" />
-  <text x="32" y="42" font-size="32" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif">C</text>
+  <rect width="64" height="64" fill="#EEF3E6" />
+  <circle cx="14" cy="32" r="5" fill="none" stroke="#262B25" stroke-width="1.8" />
+  <circle cx="26" cy="32" r="5" fill="none" stroke="#262B25" stroke-width="1.8" />
+  <circle cx="38" cy="32" r="5" fill="#B3261E" />
+  <circle cx="50" cy="32" r="5" fill="none" stroke="#262B25" stroke-width="1.8" />
 </svg>

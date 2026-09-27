@@ -3,11 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/cribbage-board/favicon.svg" />
+    <link rel="apple-touch-icon" href="/cribbage-board/icons/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#1b1f24" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EEF3E6" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1B211B" />
     <title>Cribbage Companion</title>
   </head>
   <body>
+    <!--
+      Direction contract (binding — see direction.md for the full builder brief):
+
+      THESIS: The companion is the engineer's computation pad kept beside the cards. It shows
+      its work in pencil on ruled green paper. It refuses the fake-wood pegboard skeuomorph
+      and the flat dashboard of big numbers.
+
+      OWN-WORLD: Pale green engineering paper with a faint 5-square grid (a heavier line every
+      5 squares, matching cribbage's 5-hole groups). Graphite ink for text and structure.
+      Colored pencils identify tracks: red (P1/Team 1), blue (P2/Team 2), ochre (P3). Barlow
+      workhorse sans, uppercase engineering-lettering labels, tabular numerals. Worked results
+      are double-underlined and boxed. Undo is an eraser.
+
+      STORY: At a glance players see whose peg leads and by how much, add points in one tap,
+      fix mistakes instantly, look up any rule, and see a hand's score worked out line by line
+      so they learn it.
+
+      FIRST VIEWPORT (Board): A title-block strip at the top (format · hand number · dealer
+      marker). The pad's ruled track is below it: four 30-hole streets plus the 121 hole, one
+      lane per track, with front and back pegs. Skunk lines at 90 and 60 are dashed red. Each
+      track has a scoring row: a large total, "N to go", +1 to +6 keys, and a "#" pad key. Undo
+      is always visible in the thumb zone. Bottom navigation: Board · Score Hand · Rules.
+
+      FORM: Grounded candidate 7 (the engineering computation pad), staged as a worked solution
+      sheet. Seed key 91faf1bf. Challengers weighed and declined: split-flap board (strong but
+      wrong scene), and the other catalog worlds (weak audience identification).
+    -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
