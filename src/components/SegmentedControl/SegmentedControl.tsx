@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import styles from './SegmentedControl.module.css';
 
 export interface SegmentedControlOption<T extends string> {
@@ -13,6 +13,15 @@ export interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
   label: string;
   className?: string;
+  /**
+   * "stacked" centers a custom rendered option (see `renderOption`) in a
+   * column, e.g. a symbol above a name, so options can stay equal-width
+   * without truncating on narrow screens. Defaults to "default" (a single
+   * row of wrapping text), which is unchanged for existing callers.
+   */
+  layout?: 'default' | 'stacked';
+  /** Custom content per option; falls back to `option.label` text when omitted. */
+  renderOption?: (option: SegmentedControlOption<T>, checked: boolean) => ReactNode;
 }
 
 /**
@@ -25,6 +34,8 @@ function SegmentedControl<T extends string>({
   onChange,
   label,
   className,
+  layout = 'default',
+  renderOption,
 }: SegmentedControlProps<T>) {
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -73,11 +84,13 @@ function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={checked}
             tabIndex={checked ? 0 : -1}
-            className={styles.option}
+            className={[styles.option, layout === 'stacked' ? styles.stacked : '']
+              .filter(Boolean)
+              .join(' ')}
             onClick={() => onChange(option.value)}
             onKeyDown={(event) => handleKeyDown(event, index)}
           >
-            {option.label}
+            {renderOption ? renderOption(option, checked) : option.label}
           </button>
         );
       })}

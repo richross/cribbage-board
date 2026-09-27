@@ -1,0 +1,71 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.toggleRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.compactResult {
+  display: inline-block;
+  align-self: flex-start;
+  padding: var(--space-1) 0;
+  color: var(--ink);
+  font-family: var(--font-label);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--pencil-blue);
+}
+
+.helper {
+  color: var(--ink-2);
+  font-size: var(--font-size-xs);
+}
+
+.workArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.picker,
+.breakdown {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .workArea {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .picker {
+    flex: 1 1 50%;
+  }
+
+  .breakdown {
+    flex: 1 1 50%;
+    position: sticky;
+    top: var(--space-4);
+  }
+
+  .compactResult {
+    /* The breakdown is already visible alongside the picker at this width. */
+    display: none;
+  }
+}

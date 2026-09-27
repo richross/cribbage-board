@@ -1,0 +1,61 @@
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.incomplete {
+  padding: var(--space-4);
+  color: var(--ink-2);
+  font-size: var(--font-size-body);
+  border: 1px dashed var(--grid-major);
+  border-radius: var(--radius-sm);
+}
+
+.note {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.category {
+  display: flex;
+  flex-direction: column;
+}
+
+.quiet {
+  padding: var(--space-1) 0;
+  color: var(--ink-2);
+  font-size: var(--font-size-xs);
+}
+
+.comboButton {
+  display: block;
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) linear;
+}
+
+.comboButton:hover {
+  background-color: var(--paper-raised);
+}
+
+.comboButton[aria-pressed='true'] {
+  background-color: var(--paper-raised);
+  outline: 1px solid var(--ink);
+  outline-offset: -1px;
+}
+
+.redSuit {
+  color: var(--pencil-red);
+}
+
+.rulesLink {
+  align-self: flex-start;
+  color: var(--pencil-blue);
+  font-size: var(--font-size-sm);
+}
