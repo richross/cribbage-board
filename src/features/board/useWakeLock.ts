@@ -24,12 +24,19 @@ export function useWakeLock(active: boolean): void {
     }
 
     const wakeLock = (navigator as Navigator & { wakeLock?: WakeLockLike }).wakeLock;
+    let cancelled = false;
 
     const requestLock = () => {
       if (!wakeLock) return;
       wakeLock
         .request('screen')
         .then((sentinel) => {
+          // The effect may have cleaned up while the request was pending.
+          if (cancelled) {
+            sentinel.release().catch(() => undefined);
+            return;
+          }
+          sentinelRef.current?.release().catch(() => undefined);
           sentinelRef.current = sentinel;
         })
         .catch(() => {
@@ -54,6 +61,7 @@ export function useWakeLock(active: boolean): void {
     document.addEventListener('visibilitychange', onVisibilityChange);
 
     return () => {
+      cancelled = true;
       window.removeEventListener('pointerdown', onFirstInteraction);
       window.removeEventListener('keydown', onFirstInteraction);
       document.removeEventListener('visibilitychange', onVisibilityChange);
