@@ -26,7 +26,7 @@
     calc(var(--space-6) + 64px + var(--safe-bottom));
   padding-left: calc(var(--space-4) + var(--safe-left));
   padding-right: calc(var(--space-4) + var(--safe-right));
-  max-width: 68ch;
+  max-width: 72rem;
   margin: 0 auto;
   width: 100%;
 }
@@ -158,7 +158,7 @@
 
   .main {
     padding: var(--space-8) var(--space-8);
-    max-width: 68ch;
+    max-width: 72rem;
     margin: 0;
   }
 }
