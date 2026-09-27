@@ -1,0 +1,96 @@
+.panel {
+  background-color: var(--paper-raised);
+  border: 1px solid var(--grid-major);
+  border-radius: var(--radius-sm);
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: var(--space-2);
+  color: var(--ink-2);
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+}
+
+.panel[open] > .summary::before {
+  transform: rotate(90deg);
+}
+
+.summaryLabel {
+  color: var(--ink);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 0 var(--space-4) var(--space-4);
+}
+
+.trackSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.trackHeading {
+  color: var(--ink-2);
+  font-size: var(--font-size-xs);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.entry {
+  font-size: var(--font-size-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.empty {
+  color: var(--ink-2);
+  font-size: var(--font-size-sm);
+}
+
+@media (min-width: 900px) {
+  .summary {
+    cursor: default;
+  }
+
+  .summary::before {
+    display: none;
+  }
+
+  /* Spans the full height of the row beside the board and stays put while
+     the board/scoring column scrolls past it. */
+  .panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: sticky;
+    top: var(--space-4);
+    max-height: calc(100vh - 2 * var(--space-4));
+    overflow: hidden;
+  }
+
+  .content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+  }
+}
