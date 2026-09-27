@@ -1,7 +1,7 @@
-// The peg-board visualization: a continuous "racetrack" — one lap of 120
-// holes around a rounded rectangle, one concentric lane per track (first
-// track outermost), with start holes and a shared 121 game hole at the bottom
-// center. Holes and ruled lines are SVG; pegs and every text label are an HTML
+// The peg-board visualization: the classic continuous board on its side —
+// a start run across the top, a big curve, a return run along the bottom, a
+// small U-turn, and a center run to the 121 game hole — with one colored
+// lane per track (first track outermost). Holes and ruled lines are SVG; pegs and every text label are an HTML
 // overlay so their real size never shrinks with the viewBox scale. The SVG is
 // aria-hidden — the scoring rows are the real input/output, and a
 // VisuallyHidden summary carries the same information as text.
@@ -10,7 +10,7 @@ import type { TrackState } from '../../domain/board';
 import PegShape from '../../components/PegShape/PegShape';
 import VisuallyHidden from '../../components/VisuallyHidden/VisuallyHidden';
 import { trackColorVar } from './colors';
-import { buildLayout, VIEWBOX_WIDTH } from './pegBoardLayout';
+import { buildLayout } from './pegBoardLayout';
 import type { PegBoardLayout } from './pegBoardLayout';
 import type { UndoSmudge } from './useGame';
 import styles from './PegBoard.module.css';
@@ -84,18 +84,18 @@ function pct(value: number, total: number): string {
 }
 
 /** Rendered-width / viewBox-width, so overlay pegs scale with the holes. */
-function useBoardScale(ref: React.RefObject<HTMLDivElement>): number {
+function useBoardScale(ref: React.RefObject<HTMLDivElement>, vbW: number): number {
   const [scale, setScale] = useState(1);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof ResizeObserver === 'undefined') return undefined;
     const observer = new ResizeObserver(([entry]) => {
       const width = entry.contentRect.width;
-      if (width > 0) setScale(width / VIEWBOX_WIDTH);
+      if (width > 0) setScale(width / vbW);
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [ref]);
+  }, [ref, vbW]);
   return scale;
 }
 
@@ -138,18 +138,12 @@ function OverlayPeg({
   );
 }
 
-const LANE_NAMES: Record<number, string[]> = {
-  2: ['outside lane', 'inside lane'],
-  3: ['outside lane', 'middle lane', 'inside lane'],
-};
-
 function PegBoard({ tracks, smudge }: PegBoardProps) {
   const reduceMotion = usePrefersReducedMotion();
   const frameRef = useRef<HTMLDivElement>(null);
-  const scale = useBoardScale(frameRef);
   const layout = buildLayout(tracks.length);
   const { vbW, vbH } = layout;
-  const laneNames = LANE_NAMES[tracks.length] ?? [];
+  const scale = useBoardScale(frameRef, vbW);
 
   const smudgeTrackIndex = smudge ? tracks.findIndex((t) => t.track.id === smudge.trackId) : -1;
   const smudgeXY = smudge && smudgeTrackIndex !== -1 ? layout.scoreXY(smudge.hole, smudgeTrackIndex) : null;
@@ -165,6 +159,14 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
           aria-hidden="true"
           focusable="false"
         >
+          {layout.lanePaths.map((d, trackIndex) => (
+            <path
+              key={`lane-${trackIndex}`}
+              d={d}
+              className={styles.lane}
+              style={{ stroke: trackColorVar(tracks[trackIndex].track.color), strokeWidth: layout.laneWidth - 1 }}
+            />
+          ))}
           {layout.holes.map((lane, trackIndex) => (
             <g key={trackIndex}>
               {lane.map((hole, i) => (
@@ -179,13 +181,6 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
             </g>
           ))}
           <circle cx={game.x} cy={game.y} r={layout.gameHoleRadius} className={styles.gameHole} />
-          <line
-            x1={layout.finishTick.from.x}
-            y1={layout.finishTick.from.y}
-            x2={layout.finishTick.to.x}
-            y2={layout.finishTick.to.y}
-            className={styles.finishLine}
-          />
           {layout.skunkTicks.map((tick) => (
             <line
               key={tick.after}
@@ -202,12 +197,18 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
           {layout.marks.map((mark) => (
             <span
               key={mark.value}
-              className={mark.value === 121 ? `${styles.mark} ${styles.gameMark}` : styles.mark}
+              className={styles.mark}
               style={{ left: pct(mark.x, vbW), top: pct(mark.y, vbH) }}
             >
               {mark.value}
             </span>
           ))}
+          <span
+            className={`${styles.mark} ${styles.gameMark}`}
+            style={{ left: pct(layout.gameMark.x, vbW), top: pct(layout.gameMark.y, vbH) }}
+          >
+            121
+          </span>
           {layout.skunkTicks.map((tick) => (
             <span
               key={`skunk-${tick.after}`}
@@ -217,29 +218,15 @@ function PegBoard({ tracks, smudge }: PegBoardProps) {
               Skunk
             </span>
           ))}
-
-          <ul
-            className={styles.legend}
-            style={{
-              left: pct(layout.infield.x, vbW),
-              top: pct(layout.infield.y, vbH),
-              width: pct(layout.infield.w, vbW),
-              height: pct(layout.infield.h, vbH),
-            }}
-          >
-            {tracks.map((trackState, trackIndex) => (
-              <li key={trackState.track.id} className={styles.legendItem}>
-                <PegShape
-                  shape={trackState.track.shape}
-                  color={trackColorVar(trackState.track.color)}
-                  solid
-                  size={12}
-                />
-                <span className={styles.legendLabel}>{trackState.track.shortLabel}</span>
-                <span className={styles.legendLane}>{laneNames[trackIndex]}</span>
-              </li>
-            ))}
-          </ul>
+          {tracks.map((trackState, trackIndex) => (
+            <span
+              key={`label-${trackState.track.id}`}
+              className={styles.laneLabel}
+              style={{ left: pct(layout.laneLabels[trackIndex].x, vbW), top: pct(layout.laneLabels[trackIndex].y, vbH) }}
+            >
+              {trackState.track.shortLabel}
+            </span>
+          ))}
 
           {tracks.map((trackState, trackIndex) => (
             <OverlayPeg

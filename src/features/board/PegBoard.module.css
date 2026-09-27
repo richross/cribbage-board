@@ -7,7 +7,7 @@
 .svgFrame {
   position: relative;
   width: 100%;
-  max-width: 30rem;
+  max-width: 44rem;
   margin-inline: auto;
   background-color: var(--paper-raised);
   border: 1px solid var(--grid-major);
@@ -33,9 +33,10 @@
   stroke-dasharray: 2 1.5;
 }
 
-.finishLine {
-  stroke: var(--ink);
-  stroke-width: 1.5;
+.lane {
+  fill: none;
+  stroke-opacity: 0.16;
+  stroke-linecap: butt;
 }
 
 .gameHole {
@@ -92,35 +93,15 @@
   white-space: nowrap;
 }
 
-.legend {
+.laneLabel {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
-  line-height: 1;
-  color: var(--ink-2);
-}
-
-.legendLabel {
+  transform: translate(-50%, -50%);
   font-family: var(--font-label);
   font-weight: 600;
+  font-size: 0.625rem;
+  line-height: 1;
   letter-spacing: 0.04em;
   color: var(--ink);
-}
-
-.legendLane {
   white-space: nowrap;
 }
 

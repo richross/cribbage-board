@@ -1,24 +1,17 @@
-// Pure geometry for the peg board: a continuous "racetrack" — one lap of 120
-// holes (grouped in fives) around a rounded rectangle, one concentric lane per
-// track (first track outermost), with start holes and a single shared 121
-// game hole in the gap at the bottom center. The lap runs clockwise from the
-// bottom center: left along the bottom, up the left side, across the top,
-// down the right side, and back along the bottom to the finish.
+// Pure geometry for the peg board, modeled on the classic continuous
+// ("Bicycle"-style) board laid on its side: the start run goes left-to-right
+// across the top (holes 1-30), a big curve on the right (31-50) turns into the
+// bottom run going right-to-left (51-80), a small U-turn on the left (81-90)
+// leads into the center run going left-to-right (91-120), which finishes at
+// the 121 game hole inside the big curve. Each track has its own concentric
+// lane; the first track is always the outer lane.
 
-export const LAP_HOLES = 120;
-export const GROUP_SIZE = 5;
 export const GAME_HOLE = 121;
-export const SKUNK_AFTER = [60, 90] as const;
+export const GROUP_SIZE = 5;
 
 export interface Point {
   x: number;
   y: number;
-}
-
-interface PathPoint extends Point {
-  /** Outward unit normal. */
-  nx: number;
-  ny: number;
 }
 
 export interface Tick {
@@ -36,140 +29,163 @@ export interface PegBoardLayout {
   vbH: number;
   holeRadius: number;
   gameHoleRadius: number;
+  laneWidth: number;
+  /** SVG path for each lane's tinted band. */
+  lanePaths: string[];
   /** Hole centers per lane, index 0 = hole 1. */
   holes: Point[][];
+  laneLabels: Point[];
   startXY(trackIndex: number): Point;
   gameHoleXY(): Point;
+  gameMark: Point;
   /** Position for a cumulative score (0-121) on a lane. */
   scoreXY(score: number, trackIndex: number): Point;
   /** Dashed lines across all lanes after holes 60 and 90. */
   skunkTicks: Array<Tick & { after: number; label: Point }>;
-  /** Solid line across all lanes separating the finish from the start. */
-  finishTick: Tick;
-  /** Hole numbers every 10, just inside the track. */
+  /** Hole numbers every 5. */
   marks: Mark[];
-  /** Open area in the middle of the oval, for a legend. */
-  infield: { x: number; y: number; w: number; h: number };
 }
 
-export const VIEWBOX_WIDTH = 360;
-const HALF_HEIGHT = 135;
-const CORNER = 34;
-const PAD = 10;
-const LANE_SPACING = 13;
-const HOLE_RADIUS = 2.8;
-const GROUP_GAP = 0.6; // extra spacing between groups, as a fraction of the pitch
-const GAP_BEFORE_START = 2; // gap (in pitches) from the bottom center to hole 1
-const GAP_AFTER_FINISH = 3; // gap (in pitches) from hole 120 back to the bottom center
-const MARK_INSET = 10;
+const STRAIGHT_HOLES = 30;
+const BIG_CURVE_HOLES = 20;
+const SMALL_CURVE_HOLES = 10;
+const PITCH = 8;
+const GROUP_GAP = 4;
+const BIG_RADIUS = 64;
+const SMALL_RADIUS = BIG_RADIUS / 2;
+const HOLE_RADIUS = 2.6;
+const PAD = 6;
+const LABEL_ROW = 12;
+const MARK_GAP = 7;
 
-/** Lane offsets from the centerline, outward positive; lane 0 is outermost. */
+export function laneSpacing(trackCount: number): number {
+  return trackCount >= 3 ? 12 : 13;
+}
+
+/** Offsets from the centerline toward the outside of the loop; lane 0 is outermost. */
 export function laneOffsets(trackCount: number): number[] {
-  return Array.from({ length: trackCount }, (_, k) => ((trackCount - 1) / 2 - k) * LANE_SPACING);
+  const s = laneSpacing(trackCount);
+  return Array.from({ length: trackCount }, (_, k) => ((trackCount - 1) / 2 - k) * s);
 }
+
+/** Distance of straight-run hole i (0-based) from the run's first hole, with a gap every 5. */
+function along(i: number): number {
+  return i * PITCH + Math.floor(i / GROUP_SIZE) * GROUP_GAP;
+}
+
+const deg = (d: number) => (d * Math.PI) / 180;
 
 export function buildLayout(trackCount: number): PegBoardLayout {
   const offsets = laneOffsets(trackCount);
-  const extent = offsets[0] + HOLE_RADIUS;
-  const vbW = VIEWBOX_WIDTH;
-  const a = vbW / 2 - PAD - extent - 4;
-  const b = HALF_HEIGHT;
-  const vbH = 2 * (b + extent + 4 + PAD);
-  const cx = vbW / 2;
-  const cy = vbH / 2;
-  const r = CORNER;
-  const straightX = a - r;
-  const straightY = 2 * (b - r);
-  const arc = (Math.PI * r) / 2;
+  const s = laneSpacing(trackCount);
+  const ext = offsets[0] + s / 2;
+  const R = BIG_RADIUS;
+  const r = SMALL_RADIUS;
+  const runLength = along(STRAIGHT_HOLES - 1);
 
-  type Segment = { len: number; at: (t: number) => PathPoint };
-  const line = (x0: number, y0: number, dx: number, dy: number, nx: number, ny: number, len: number): Segment => ({
-    len,
-    at: (t) => ({ x: x0 + dx * t, y: y0 + dy * t, nx, ny }),
-  });
-  const bend = (ox: number, oy: number, fromDeg: number): Segment => ({
-    len: arc,
-    at: (t) => {
-      const theta = ((fromDeg + (t / arc) * 90) * Math.PI) / 180;
-      const nx = Math.cos(theta);
-      const ny = Math.sin(theta);
-      return { x: ox + r * nx, y: oy + r * ny, nx, ny };
-    },
-  });
+  const xU = PAD + r + ext;
+  const xR = xU + PITCH + runLength;
+  const yA = PAD + LABEL_ROW + ext;
+  const yC = yA + R;
+  const yB = yA + 2 * R;
+  const yD = yC + r;
+  const vbW = xR + R + ext + PAD;
+  const vbH = yB + ext + LABEL_ROW + PAD;
 
-  const segments: Segment[] = [
-    line(cx, cy + b, -1, 0, 0, 1, straightX),
-    bend(cx - a + r, cy + b - r, 90),
-    line(cx - a, cy + b - r, 0, -1, -1, 0, straightY),
-    bend(cx - a + r, cy - b + r, 180),
-    line(cx - a + r, cy - b, 1, 0, 0, -1, 2 * straightX),
-    bend(cx + a - r, cy - b + r, 270),
-    line(cx + a, cy - b + r, 0, 1, 1, 0, straightY),
-    bend(cx + a - r, cy + b - r, 0),
-    line(cx + a - r, cy + b, -1, 0, 0, 1, straightX),
-  ];
-  const perimeter = segments.reduce((sum, s) => sum + s.len, 0);
-
-  const pointAt = (sRaw: number): PathPoint => {
-    let s = ((sRaw % perimeter) + perimeter) % perimeter;
-    for (const seg of segments) {
-      if (s <= seg.len) return seg.at(s);
-      s -= seg.len;
-    }
-    return segments[segments.length - 1].at(segments[segments.length - 1].len);
+  const runA = (i: number, off: number): Point => ({ x: xU + PITCH / 2 + along(i), y: yA - off });
+  const runB = (i: number, off: number): Point => ({ x: xR - PITCH / 2 - along(i), y: yB + off });
+  const runC = (i: number, off: number): Point => ({ x: xU + PITCH / 2 + along(i), y: yC - off });
+  const bigCurve = (k: number, off: number): Point => {
+    const theta = deg(-90 + ((k + 0.5) * 180) / BIG_CURVE_HOLES);
+    return { x: xR + (R + off) * Math.cos(theta), y: yC + (R + off) * Math.sin(theta) };
   };
-  const offsetPoint = (s: number, offset: number): Point => {
-    const p = pointAt(s);
-    return { x: p.x + p.nx * offset, y: p.y + p.ny * offset };
+  const smallCurve = (k: number, off: number): Point => {
+    const theta = deg(90 + ((k + 0.5) * 180) / SMALL_CURVE_HOLES);
+    return { x: xU + (r + off) * Math.cos(theta), y: yD + (r + off) * Math.sin(theta) };
   };
 
-  const groups = LAP_HOLES / GROUP_SIZE;
-  const pitch = perimeter / (LAP_HOLES - 1 + (groups - 1) * GROUP_GAP + GAP_BEFORE_START + GAP_AFTER_FINISH);
-  const holeS = (index: number) =>
-    GAP_BEFORE_START * pitch + index * pitch + Math.floor(index / GROUP_SIZE) * GROUP_GAP * pitch;
+  /** Hole n (1-120) on the lane at `off`. */
+  const holeAt = (n: number, off: number): Point => {
+    if (n <= 30) return runA(n - 1, off);
+    if (n <= 50) return bigCurve(n - 31, off);
+    if (n <= 80) return runB(n - 51, off);
+    if (n <= 90) return smallCurve(n - 81, off);
+    return runC(n - 91, off);
+  };
 
-  const holes = offsets.map((offset) => Array.from({ length: LAP_HOLES }, (_, i) => offsetPoint(holeS(i), offset)));
-  const startS = 0.7 * pitch;
-  const gameS = -1.5 * pitch;
-  const startXY = (trackIndex: number) => offsetPoint(startS, offsets[trackIndex]);
-  const gameHoleXY = () => offsetPoint(gameS, 0);
+  const holes = offsets.map((off) => Array.from({ length: 120 }, (_, i) => holeAt(i + 1, off)));
+
+  const startX = xU + PITCH / 2 - 2.25 * PITCH;
+  const startXY = (trackIndex: number): Point => ({ x: startX, y: yA - offsets[trackIndex] });
+  const game: Point = { x: xR + 16, y: yC };
+  const gameHoleXY = () => game;
 
   const scoreXY = (score: number, trackIndex: number): Point => {
     if (score <= 0) return startXY(trackIndex);
-    if (score >= GAME_HOLE) return gameHoleXY();
-    return holes[trackIndex][Math.min(score, LAP_HOLES) - 1];
+    if (score >= GAME_HOLE) return game;
+    return holes[trackIndex][score - 1];
   };
 
-  const across = (s: number, reach: number): Tick => ({ from: offsetPoint(s, -reach), to: offsetPoint(s, reach) });
-  const reach = extent + 4;
-  const skunkTicks = SKUNK_AFTER.map((after) => {
-    const s = (holeS(after - 1) + holeS(after)) / 2;
-    return { ...across(s, reach), after, label: offsetPoint(s + 2.2 * pitch, -(extent + 22)) };
+  const lanePaths = offsets.map((off) => {
+    const rb = R + off;
+    const rs = r + off;
+    const endC = xR - PITCH / 2 + PITCH / 2;
+    return [
+      `M ${startX - PITCH / 2} ${yA - off}`,
+      `L ${xR} ${yA - off}`,
+      `A ${rb} ${rb} 0 0 1 ${xR} ${yB + off}`,
+      `L ${xU} ${yB + off}`,
+      `A ${rs} ${rs} 0 0 1 ${xU} ${yC - off}`,
+      `L ${endC} ${yC - off}`,
+    ].join(' ');
   });
-  const finishTick = across(-0.4 * pitch, reach);
+
+  const reach = ext + 2;
+  const tick60x = xR - PITCH / 2 - (along(9) + along(10)) / 2;
+  const skunkTicks = [
+    {
+      after: 60,
+      from: { x: tick60x, y: yB - reach },
+      to: { x: tick60x, y: yB + reach },
+      label: { x: tick60x, y: yB - ext - MARK_GAP },
+    },
+    {
+      after: 90,
+      from: { x: xU, y: yC - reach },
+      to: { x: xU, y: yC + reach },
+      label: { x: xU + 20, y: yC + ext + MARK_GAP },
+    },
+  ];
 
   const marks: Mark[] = [];
-  for (let value = 10; value < LAP_HOLES; value += 10) {
-    marks.push({ value, ...offsetPoint(holeS(value - 1), -(extent + MARK_INSET)) });
+  for (let n = 5; n <= 120; n += 5) {
+    const hole = holeAt(n, 0);
+    if (n <= 30) marks.push({ value: n, x: hole.x, y: yA - ext - MARK_GAP });
+    else if (n <= 50) {
+      const theta = deg(-90 + ((n - 31 + 0.5) * 180) / BIG_CURVE_HOLES);
+      const rr = R - ext - MARK_GAP - 2;
+      marks.push({ value: n, x: xR + rr * Math.cos(theta), y: yC + rr * Math.sin(theta) });
+    } else if (n <= 80) marks.push({ value: n, x: hole.x, y: yB + ext + MARK_GAP });
+    else if (n > 90) marks.push({ value: n, x: hole.x, y: yC - ext - MARK_GAP });
   }
-  marks.push({ value: GAME_HOLE, ...offsetPoint(gameS, -(extent + MARK_INSET)) });
 
-  const inner = extent + MARK_INSET + 44;
-  const infield = { x: cx - a + inner, y: cy - b + inner, w: 2 * (a - inner), h: 2 * (b - inner) };
+  const laneLabels = offsets.map((off) => ({ x: startX - 12, y: yA - off }));
 
   return {
     trackCount,
     vbW,
     vbH,
     holeRadius: HOLE_RADIUS,
-    gameHoleRadius: 6.5,
+    gameHoleRadius: 6,
+    laneWidth: s,
+    lanePaths,
     holes,
+    laneLabels,
     startXY,
     gameHoleXY,
+    gameMark: { x: game.x, y: game.y - 13 },
     scoreXY,
     skunkTicks,
-    finishTick,
     marks,
-    infield,
   };
 }
