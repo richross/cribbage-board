@@ -1,0 +1,135 @@
+/* MarkdownBody: the 68ch reading surface for a rules section. Structure
+   comes from ruled lines and spacing, never nested cards. */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 68ch;
+}
+
+.h2 {
+  margin-top: var(--space-8);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  scroll-margin-top: var(--space-6);
+}
+
+.h2:first-child {
+  margin-top: 0;
+}
+
+.h3 {
+  margin-top: var(--space-5);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  scroll-margin-top: var(--space-6);
+}
+
+.paragraph {
+  color: var(--ink);
+  line-height: 1.65;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-left: var(--space-6);
+  line-height: 1.6;
+}
+
+ol.list {
+  list-style: decimal;
+}
+
+ul.list {
+  list-style: disc;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--grid-major);
+}
+
+.tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.caption {
+  caption-side: top;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--grid-major);
+}
+
+.tableWrap th,
+.tableWrap td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-bottom: 1px solid var(--grid-minor);
+  vertical-align: top;
+}
+
+.tableWrap th {
+  font-family: var(--font-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.tableWrap tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Worked-example blockquote: a ruled box, like the pad's worked lines —
+   separation via a rule, not a card. */
+.example {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--grid-major);
+  background-color: var(--paper-raised);
+}
+
+.example .paragraph:first-child {
+  margin-top: 0;
+}
+
+.example .list {
+  padding-left: var(--space-5);
+}
+
+/* Card notation: ♥/♦ colored in red pencil (♠/♣ stay --ink, unstyled). */
+.redSuit {
+  color: var(--pencil-red);
+}
+
+.body mark {
+  background-color: color-mix(in srgb, var(--pencil-ochre) 28%, var(--paper));
+  color: var(--ink);
+  padding: 0 0.1em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .body mark {
+    background-color: color-mix(in srgb, var(--pencil-ochre) 35%, var(--paper));
+  }
+}

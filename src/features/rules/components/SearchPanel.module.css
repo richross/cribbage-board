@@ -1,0 +1,113 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fieldRow {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.fieldWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.field {
+  width: 100%;
+  /* The custom × button below is the only clear affordance; hide the
+     native browser one so type="search" doesn't show a duplicate. */
+}
+
+.field::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.clear {
+  position: absolute;
+  right: var(--space-2);
+  bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  font-size: var(--font-size-lg);
+  line-height: 1;
+  color: var(--ink-2);
+  border-radius: var(--radius-sm);
+}
+
+.clear:hover {
+  color: var(--ink);
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.count {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+
+.noResults {
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--grid-major);
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-3) var(--space-2);
+  text-align: left;
+  border-bottom: 1px solid var(--grid-major);
+}
+
+.result:hover {
+  background-color: var(--paper-raised);
+}
+
+.resultPath {
+  font-family: var(--font-label);
+  font-weight: 600;
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.snippet {
+  color: var(--ink-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.snippet mark {
+  background-color: color-mix(in srgb, var(--pencil-ochre) 28%, var(--paper));
+  color: var(--ink);
+  padding: 0 0.1em;
+}
+
+@media (prefers-color-scheme: dark) {
+  .snippet mark {
+    background-color: color-mix(in srgb, var(--pencil-ochre) 35%, var(--paper));
+  }
+}
