@@ -63,7 +63,18 @@ export default defineConfig({
         'src/main.tsx',
         '**/*.d.ts',
         'src/vite-env.d.ts',
+        // Re-export barrels hold no behaviour; counting them scores file shape
+        // rather than tested logic.
+        'src/**/index.ts',
       ],
+      thresholds: {
+        statements: 90,
+        branches: 85,
+        functions: 85,
+        lines: 90,
+      },
     },
   },
 });
+
+
