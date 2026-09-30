@@ -50,5 +50,20 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     exclude: ['e2e/**', 'node_modules/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'json', 'lcov'],
+      reportsDirectory: 'coverage',
+      all: true,
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        '**/*.test.{ts,tsx}',
+        '**/__tests__/**',
+        'src/test/**',
+        'src/main.tsx',
+        '**/*.d.ts',
+        'src/vite-env.d.ts',
+      ],
+    },
   },
 });
