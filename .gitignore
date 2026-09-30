@@ -2,7 +2,9 @@ node_modules
 dist
 dev-dist
 coverage
+.test-results/
 playwright-report
 test-results
 *.local
 .DS_Store
+.impeccable/hook.cache.json

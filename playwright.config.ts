@@ -4,6 +4,19 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   retries: 0,
+  ...(process.env.PW_JSON
+    ? {
+        reporter: [
+          ['list'],
+          [
+            'json',
+            {
+              outputFile: process.env.PLAYWRIGHT_JSON_OUTPUT_NAME ?? '.test-results/playwright.json',
+            },
+          ],
+        ],
+      }
+    : {}),
   use: {
     baseURL: 'http://localhost:4173/cribbage-board/',
     trace: 'on-first-retry',

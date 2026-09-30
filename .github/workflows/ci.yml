@@ -25,13 +25,23 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm test
+      - run: npm run test:coverage
       - run: npx playwright install --with-deps chromium
       # e2e builds the production bundle and serves it under /cribbage-board/,
       # including the offline-reload check.
       - run: npm run e2e
         env:
           CI: 'true'
+          PW_JSON: '1'
+          PLAYWRIGHT_JSON_OUTPUT_NAME: .test-results/playwright.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            coverage/
+            .test-results/
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

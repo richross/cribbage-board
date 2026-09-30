@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import { LiveRegionProvider } from '../../components';
+import RulesPage from './RulesPage';
 import RulesIndexPage from './RulesIndexPage';
 import RulesSectionPage from './RulesSectionPage';
 
@@ -18,6 +19,33 @@ function renderRules(initialEntry = '/rules') {
     </LiveRegionProvider>,
   );
 }
+
+/** Renders the real routed component, so its useParams dispatch is exercised. */
+function renderRulesPage(initialEntry = '/rules') {
+  return render(
+    <LiveRegionProvider>
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <Routes>
+          <Route path="/rules" element={<RulesPage />} />
+          <Route path="/rules/:sectionId" element={<RulesPage />} />
+        </Routes>
+      </MemoryRouter>
+    </LiveRegionProvider>,
+  );
+}
+
+describe('RulesPage', () => {
+  it('renders the index when no sectionId param is present', async () => {
+    renderRulesPage('/rules');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Rules' })).toBeInTheDocument();
+  });
+
+  it('renders a single section when a sectionId param is present', async () => {
+    renderRulesPage('/rules/pegging');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Pegging' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 1, name: 'Rules' })).not.toBeInTheDocument();
+  });
+});
 
 describe('RulesIndexPage', () => {
   it('lists every section in order as a row with title and summary', () => {
